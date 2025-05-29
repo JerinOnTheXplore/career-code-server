@@ -33,7 +33,14 @@ async function run() {
 
 // jobs api
 app.get('/jobs',async (req,res)=>{
-  const cursor = jobsCollection.find();
+
+const email = req.query.email;
+const query = {};
+if(email){
+  query.hr_email = email;
+}
+
+  const cursor = jobsCollection.find(query);
   const result = await cursor.toArray();
   res.send(result);
 });
@@ -44,6 +51,15 @@ app.get('/jobs/:id',async (req,res)=>{
   const result = await jobsCollection.findOne(query);
   res.send(result);
 });
+
+// app.get('/application/:id',()=>{})
+app.get('/applications/job/:job_id', async (req,res)=>{
+  const job_id = req.params.job_id;
+  const query = {jobId: job_id};
+  const result = await applicationCollection.find(query).toArray();
+  res.send(result);
+})
+
 
 app.post('/jobs',async(req,res)=>{
   const newJob = req.body;
@@ -61,7 +77,7 @@ app.get('/applications', async (req,res)=>{
   }
   const result =await applicationCollection.find(query).toArray();
   res.send(result);
-})
+});
 
 app.post('/applications', async (req,res) =>{
   const application = req.body;
